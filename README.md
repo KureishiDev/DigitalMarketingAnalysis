@@ -1,4 +1,6 @@
+
 Análise de Dados de Campanha de Marketing
+
 Este repositório contém um exemplo de análise de dados de uma campanha de marketing, utilizando Python e bibliotecas populares como Pandas, Matplotlib, Seaborn e Scikit-learn. O objetivo é demonstrar como realizar uma análise exploratória de dados (EDA), visualizações, modelagem preditiva e segmentação de público.
 
 Requisitos
