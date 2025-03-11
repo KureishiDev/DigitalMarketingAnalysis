@@ -1,120 +1,145 @@
-README - Data Analysis and Modeling Pipeline
-This script demonstrates a simplified workflow for analyzing a campaign's performance using data analysis and machine learning techniques in Python. It includes data cleaning, exploratory data analysis (EDA), data visualization, predictive modeling with linear regression, and audience segmentation with K-means clustering.
+Análise de Dados de Campanha de Marketing
+Este repositório contém um exemplo de análise de dados de uma campanha de marketing, utilizando Python e bibliotecas populares como Pandas, Matplotlib, Seaborn e Scikit-learn. O objetivo é demonstrar como realizar uma análise exploratória de dados (EDA), visualizações, modelagem preditiva e segmentação de público.
 
-Dependencies
-To run this script, ensure you have the following Python libraries installed:
+Requisitos
+Para executar o código, você precisará das seguintes bibliotecas Python:
 
 pandas
+
 matplotlib
+
 seaborn
+
 scikit-learn
-You can install them using pip:
+
+Você pode instalar as dependências usando o seguinte comando:
 
 bash
-Copiar
-Editar
+Copy
 pip install pandas matplotlib seaborn scikit-learn
-Steps in the Script
-1. Data Collection and Cleaning
-The script begins by loading the campaign data from a CSV file (dados_campanha.csv). Ensure that your dataset is in a similar format, or adjust the code to load your own data.
+Estrutura do Código
+O código está dividido em cinco seções principais:
+
+Coleta e Limpeza de Dados
+
+Análise Exploratória de Dados (EDA)
+
+Visualização de Dados
+
+Modelagem Preditiva (Opcional)
+
+Segmentação de Público (Opcional)
+
+1. Coleta e Limpeza de Dados
+Nesta seção, os dados da campanha são carregados a partir de um arquivo CSV (dados_campanha.csv). Certifique-se de substituir este arquivo pelo seu conjunto de dados real.
 
 python
-Copiar
-Editar
+Copy
+import pandas as pd
+
+# Substitua pelo seu arquivo de dados de campanha real
 dados_campanha = pd.read_csv('dados_campanha.csv')
-2. Exploratory Data Analysis (EDA)
-The next section performs basic statistical analysis and visualizations.
-
-Descriptive statistics: The .describe() function generates summary statistics for numerical columns.
+2. Análise Exploratória de Dados (EDA)
+Aqui, são realizadas análises descritivas e visualizações iniciais para entender a distribuição dos dados, como a distribuição do Custo por Aquisição (CPA) e as conversões por plataforma.
 
 python
-Copiar
-Editar
+Copy
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Estatísticas descritivas
 print(dados_campanha.describe())
-CPA Distribution: Visualizes the distribution of Cost per Acquisition (CPA).
 
-python
-Copiar
-Editar
+# Distribuição do CPA
+plt.figure(figsize=(10, 6))
 sns.histplot(dados_campanha['cpa'], kde=True)
-Conversions by Platform: Displays total conversions per platform in a bar chart.
+plt.title('Distribuição do Custo por Aquisição (CPA)')
+plt.show()
 
-python
-Copiar
-Editar
-conversões_plataforma = dados_campanha.groupby('plataforma')['conversões'].sum()
+# Conversões por plataforma
+conversões_plataforma = dados_campanha.groupby('plataforma')['conversões'].sum().sort_values(ascending=False)
+plt.figure(figsize=(10, 6))
 conversões_plataforma.plot(kind='bar')
-Conversions Over Time: A line chart showing conversions over time.
+plt.title('Conversões por Plataforma')
+plt.show()
 
-python
-Copiar
-Editar
+# Conversões ao longo do tempo
 dados_campanha['data'] = pd.to_datetime(dados_campanha['data'])
 conversões_tempo = dados_campanha.groupby('data')['conversões'].sum()
+plt.figure(figsize=(15, 6))
 conversões_tempo.plot(kind='line')
-3. Data Visualization
-This section includes scatter plots and box plots to explore relationships in the data.
-
-Budget vs Conversions: A scatter plot showing the relationship between campaign budget and conversions.
+plt.title('Conversões ao Longo do Tempo')
+plt.show()
+3. Visualização de Dados
+Esta seção inclui visualizações adicionais, como scatter plots e boxplots, para explorar relações entre variáveis, como orçamento e conversões, e a distribuição do CPA por plataforma.
 
 python
-Copiar
-Editar
+Copy
+# Scatter plot da relação entre orçamento e conversões
+plt.figure(figsize=(10, 6))
 sns.scatterplot(x='orcamento', y='conversões', data=dados_campanha)
-CPA by Platform: A box plot visualizing the distribution of CPA for each platform.
+plt.title('Relação entre Orçamento e Conversões')
+plt.show()
 
-python
-Copiar
-Editar
+# Boxplot do CPA por plataforma
+plt.figure(figsize=(12, 6))
 sns.boxplot(x='plataforma', y='cpa', data=dados_campanha)
-4. Predictive Modeling (Optional - Linear Regression)
-This section demonstrates a simple linear regression model to predict conversions based on budget and clicks.
-
-Data Preparation: Selects the features (orcamento and cliques) and target (conversões).
+plt.title('Custo por Aquisição (CPA) por Plataforma')
+plt.xticks(rotation=45, ha='right')
+plt.show()
+4. Modelagem Preditiva (Opcional)
+Aqui, é demonstrado como construir um modelo de regressão linear simples para prever conversões com base em features como orçamento e cliques.
 
 python
-Copiar
-Editar
-features = ['orcamento', 'cliques']
+Copy
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+# Preparação dos dados
+features = ['orcamento', 'cliques']  # Exemplo de features
 target = 'conversões'
-Training the Model: Splits the data into training and testing sets and fits the linear regression model.
 
-python
-Copiar
-Editar
+dados_modelo = dados_campanha.dropna(subset=features + [target])
+
+X_train, X_test, y_train, y_test = train_test_split(dados_modelo[features], dados_modelo[target], test_size=0.2, random_state=42)
+
+# Treinamento do modelo
+modelo = LinearRegression()
 modelo.fit(X_train, y_train)
-Model Evaluation: Calculates the Mean Squared Error (MSE) to assess the model's performance.
 
-python
-Copiar
-Editar
+# Avaliação do modelo
+y_pred = modelo.predict(X_test)
 mse = mean_squared_error(y_test, y_pred)
 print(f'Erro Quadrático Médio (MSE): {mse}')
-5. Audience Segmentation (Optional - K-means Clustering)
-If demographic data is available (e.g., age, gender), the script demonstrates how to segment the audience using K-means clustering.
-
-Data Preparation for Segmentation: Selects the relevant demographic features and handles missing data.
+5. Segmentação de Público (Opcional)
+Nesta seção, é utilizado o algoritmo K-means para segmentar o público com base em dados demográficos, como idade e gênero.
 
 python
-Copiar
-Editar
-dados_segmentacao = dados_campanha[['idade', 'genero']].dropna()
-Clustering: Applies K-means clustering to segment the audience into three clusters.
+Copy
+from sklearn.cluster import KMeans
 
-python
-Copiar
-Editar
+# Supondo que você tenha dados demográficos (idade, gênero)
+dados_segmentacao = dados_campanha[['idade', 'genero']].dropna() # Exemplo
 kmeans = KMeans(n_clusters=3, random_state=42)
 dados_segmentacao['cluster'] = kmeans.fit_predict(dados_segmentacao)
-Visualization of Clusters: Plots the clusters based on age and gender.
 
-python
-Copiar
-Editar
+# Visualização dos clusters
 sns.scatterplot(x='idade', y='genero', hue='cluster', data=dados_segmentacao)
-Notes
-File Path: Replace 'dados_campanha.csv' with the path to your own dataset.
-Customizations: Depending on your dataset, you may need to adjust column names or data formats.
-Optional Sections: Both the predictive modeling and audience segmentation sections are optional and can be removed if not needed.
-License
-This script is provided under the MIT License.
+plt.title('Segmentação de Público (K-means)')
+plt.show()
+Como Usar
+Clone este repositório.
+
+Instale as dependências necessárias.
+
+Substitua o arquivo dados_campanha.csv pelo seu conjunto de dados.
+
+Execute o código no seu ambiente Python.
+
+Contribuições
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests para melhorar este projeto.
+
+Licença
+Este projeto está licenciado sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+
